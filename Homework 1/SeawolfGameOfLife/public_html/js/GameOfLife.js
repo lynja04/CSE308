@@ -311,6 +311,7 @@ function initEventHandlers()
 
     //Record mouse movement for click and drag effect
     canvas.onmousedown = respondToMouseDown;
+    canvas.onmouseup = respondToMouseUp;
     
     // AND ALL THE APP'S BUTTONS
     document.getElementById("start_button").onclick=startGameOfLife;
@@ -397,25 +398,48 @@ function respondToLoadedImage(imgName, img, pixelArray)
         }    
 }
 
+var recordMouseArray;
+var pressedDown;
 function respondToMouseDown(event)
 {
+    recordMouseArray = new Array();
+    pressedDown = true;
     // GET THE PATTERN SELECTED IN THE DROP DOWN LIST
     var patternsList = document.getElementById("game_of_life_patterns");
     var selectedPattern = patternsList.options[patternsList.selectedIndex].value;
 
+    // CALCULATE THE ROW,COL OF THE CLICK
+    var canvasCoords = getRelativeCoords(event);
+    var clickCol = Math.floor(canvasCoords.x/cellLength);
+    var clickRow = Math.floor(canvasCoords.y/cellLength);
 
     //If void cell is selected
     if(selectedPattern === "VoidCell.png") {
 
-        // CALCULATE THE ROW,COL OF THE CLICK
-        var canvasCoords = getRelativeCoords(event);
-        var clickCol = Math.floor(canvasCoords.x/cellLength);
-        var clickRow = Math.floor(canvasCoords.y/cellLength);
-
-
-
         // LOAD THE COORDINATES OF THE PIXELS TO DRAW
         var pixels = patterns[selectedPattern];
+
+        for (var i = 0; i < pixels.length; i += 2) {
+            var col = clickCol + pixels[i];
+            var row = clickRow + pixels[i + 1];
+            setGridCell(recordMouseArray, row, col, VOID_CELL);
+        }
+
+        brightFeedback(pixels, clickCol, clickRow, 1);
+
+        respondToMouseMove;
+
+    } else if(selectedPattern === "RemoveVoidCell.png"){
+        // LOAD THE COORDINATES OF THE PIXELS TO DRAW
+        var pixels = patterns[selectedPattern];
+
+        for (var i = 0; i < pixels.length; i += 2) {
+            var col = clickCol + pixels[i];
+            var row = clickRow + pixels[i + 1];
+            setGridCell(recordMouseArray, row, col, LIVE_CELL);
+        }
+
+        brightFeedback(pixels, clickCol, clickRow, 0);
     }
 }
 
@@ -438,31 +462,31 @@ function respondToMouseClick(event)
     var clickCol = Math.floor(canvasCoords.x/cellLength);
     var clickRow = Math.floor(canvasCoords.y/cellLength);
 
-    //If void cell is selected
-    if(selectedPattern === "VoidCell.png"){
-        // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
-        for (var i = 0; i < pixels.length; i += 2) {
-            var col = clickCol + pixels[i];
-            var row = clickRow + pixels[i + 1];
-            setGridCell(renderGrid, row, col, VOID_CELL);
-            setGridCell(updateGrid, row, col, VOID_CELL);
-        }
-        brightFeedback(pixels, clickCol, clickRow, 1);
-        return;
-    }
+    // //If void cell is selected
+    // if(selectedPattern === "VoidCell.png"){
+    //     // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
+    //     for (var i = 0; i < pixels.length; i += 2) {
+    //         var col = clickCol + pixels[i];
+    //         var row = clickRow + pixels[i + 1];
+    //         setGridCell(renderGrid, row, col, VOID_CELL);
+    //         setGridCell(updateGrid, row, col, VOID_CELL);
+    //     }
+    //     brightFeedback(pixels, clickCol, clickRow, 1);
+    //     return;
+    // }
 
-    //If remove void cell is selected
-    if(selectedPattern === "RemoveVoidCell.png"){
-        // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
-        for (var i = 0; i < pixels.length; i += 2) {
-            var col = clickCol + pixels[i];
-            var row = clickRow + pixels[i + 1];
-            setGridCell(renderGrid, row, col, LIVE_CELL);
-            setGridCell(updateGrid, row, col, LIVE_CELL);
-        }
-        brightFeedback(pixels, clickCol, clickRow, 0);
-        return;
-    }
+    // //If remove void cell is selected
+    // if(selectedPattern === "RemoveVoidCell.png"){
+    //     // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
+    //     for (var i = 0; i < pixels.length; i += 2) {
+    //         var col = clickCol + pixels[i];
+    //         var row = clickRow + pixels[i + 1];
+    //         setGridCell(renderGrid, row, col, LIVE_CELL);
+    //         setGridCell(updateGrid, row, col, LIVE_CELL);
+    //     }
+    //     brightFeedback(pixels, clickCol, clickRow, 0);
+    //     return;
+    // }
 
     // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
     for (var i = 0; i < pixels.length; i += 2) {
@@ -495,6 +519,30 @@ function respondToMouseMove(event)
     var mouseCol = Math.floor(canvasCoords.x/cellLength);
     var mouseRow = Math.floor(canvasCoords.y/cellLength);
 
+    if(selectedPattern === "VoidCell.png"){
+        //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
+        if(pressedDown === true){
+            for (var i = 0; i < pixels.length; i += 2)
+            {
+                var col = mouseCol + pixels[i];
+                var row = mouseRow + pixels[i+1];
+                setGridCell(recordMouseArray, row, col, VOID_CELL);
+            }
+            brightFeedback(pixels, mouseCol, mouseRow, 1);
+        }
+    } else if(selectedPattern === "RemoveVoidCell.png"){
+        //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
+        if(pressedDown === true){
+            for (var i = 0; i < pixels.length; i += 2)
+            {
+                var col = mouseCol + pixels[i];
+                var row = mouseRow + pixels[i+1];
+                setGridCell(recordMouseArray, row, col, LIVE_CELL);
+            }
+            brightFeedback(pixels, mouseCol, mouseRow, 0);
+        }
+    }
+
     //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
     for (var i = 0; i < pixels.length; i += 2)
     {
@@ -506,6 +554,45 @@ function respondToMouseMove(event)
 
     // RENDER THE GHOST CELLS
     renderGhostCells();
+}
+
+function respondToMouseUp(event){
+    // GET THE PATTERN SELECTED IN THE DROP DOWN LIST
+    var patternsList = document.getElementById("game_of_life_patterns");
+    var selectedPattern = patternsList.options[patternsList.selectedIndex].value;
+
+    // LOAD THE COORDINATES OF THE PIXELS
+    var pixels = patterns[selectedPattern];
+
+    // CALCULATE THE ROW,COL OF THE MOUSE
+    var canvasCoords = getRelativeCoords(event);
+    var mouseCol = Math.floor(canvasCoords.x/cellLength);
+    var mouseRow = Math.floor(canvasCoords.y/cellLength);
+
+    if(selectedPattern === "VoidCell.png"){
+        if(pressedDown === true){
+            //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
+            for (var i = 0; i < pixels.length; i += 2)
+            {
+                var col = mouseCol + pixels[i];
+                var row = mouseRow + pixels[i+1];
+                setGridCell(recordMouseArray, row, col, VOID_CELL);
+            }
+            brightFeedback(pixels, mouseCol, mouseRow, 1);
+            pressedDown = false;
+        }
+    } else if(selectedPattern === "RemoveVoidCell.png") {
+        if (pressedDown === true) {
+            //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
+            for (var i = 0; i < pixels.length; i += 2) {
+                var col = mouseCol + pixels[i];
+                var row = mouseRow + pixels[i + 1];
+                setGridCell(recordMouseArray, row, col, LIVE_CELL);
+            }
+            brightFeedback(pixels, mouseCol, mouseRow, 0);
+            pressedDown = false;
+        }
+    }
 }
 
 /*
