@@ -1,0 +1,74 @@
+/*
+    GameOfLife.css - This Cascading Style Sheet specifies
+    the style (colors, fonts, etc.) and layout for the
+    Conway's Game of Life app.
+
+    For more on how to use CSS files, see:
+        http://www.w3schools.com/css/
+*/
+body
+{
+    background-color:rgb(118,143,165);
+    font-family:"Arial";
+    position:absolute;
+    width:1024px;
+    margin-left: 10px;
+    text-align:left;        
+    margin-top: 10px;
+}
+
+.author
+{
+    font-size:11pt;
+    background-color:#990000;
+    color:#ffffff;
+    margin-top:-5px;
+}
+
+#banner 
+{
+    font-size:24pt;
+    color:#ffffff;
+    background-color:#990000;
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#container{
+    position: relative;
+}
+
+#canvas_layer
+{
+    position:relative;
+}
+
+#game_of_life_canvas
+{
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:1;
+}
+
+#ghost_canvas
+{
+    z-index:0;
+    background-color:rgb(255,255,255);
+}
+
+#toolbar 
+{
+    background-color: rgb(200, 100, 100);
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+}
+
+input, select
+{
+    font-size: 12pt;
+    font-family: monospace;
+    font-weight: bold;
+}

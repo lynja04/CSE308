@@ -1,0 +1,124 @@
+<!--
+Conway's Game of Life (Seawolf Edition)
+
+Authors: Richard McKenna & _______________
+
+This page contains a JavaScript implementation of Conway's
+Game of Life, which is not really a game, but a simulation. The
+user may select different types of objects to put into the game
+world and may start and pause the simulation as desired.
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Conway's Game of Life (Seawolf Edition)</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <!-- Page style, like colors and fonts, are specified
+        inside the GameOfLife.css style sheet.
+        -->
+        <link rel="stylesheet" type="text/css" href="./css/GameOfLife.css" />
+        <!-- The JavaScript code that actually runs the Game of Life
+        simulation is inside the GameOfLife.js JavaScript file. This
+        file does all game state updating and rendering. Note that
+        methods inside this file are referenced later in this page.
+        -->
+        <script src="./js/GameOfLife.js"></script>
+    </head>
+    <body>
+        <!--
+        This is the page's header.
+        -->
+        <div id="banner">Conway's Game of Life<br />
+        (Seawolf Edition)<br />
+        </div>
+        
+        <!-- This is the toolbar with buttons for starting, pausing,
+        and resetting the simulation, as well as containing a drop
+        down list for selecting patterns to add to the game.
+        -->
+        <div id="toolbar">
+            <input id="start_button" type="button" value="Start" />
+            <input id="pause_button" type="button" value="Pause" />
+            <input id="reset_button" type="button" value="Reset" />
+            
+            <!-- Here's the drop down list, it contains a reference
+            to all the image patterns to be used. -->
+            <select id="game_of_life_patterns">
+                <option value="Bomb.png">Bomb</option>
+                <!-- 2x2 Square -->
+                <option value="Square.png">Square</option>
+                <!--->
+                <option value="Exploder.png">Exploder</option>
+                <option value="Fuse.png">Fuse</option>
+                <!-- Four Gliders -->
+                <option value="GliderUpLeft.png">GliderUpLeft</option>
+                <option value="GliderUpRight.png">GliderUpRight</option>
+                <option value="GliderDownLeft.png">GliderDownLeft</option>
+                <option value="GliderDownRight.png">GliderDownRight</option>
+                <!--->
+                <option value="GosperGliderGun1.png">Gosper Glider Gun #1</option>
+                <option value="GosperGliderGun2.png">Gosper Glider Gun #2</option>
+                <option value="GosperGliderGun3.png">Gosper Glider Gun #3</option>
+                <option value="GosperGliderGun4.png">Gosper Glider Gun #4</option>
+                <!-- Four LightweightSpaceships -->
+                <option value="LightweightSpaceshipUp.png">Lightweight Spaceship Up</option>
+                <option value="LightweightSpaceshipDown.png">Lightweight Spaceship Down</option>
+                <option value="LightweightSpaceshipLeft.png">Lightweight Spaceship Left</option>
+                <option value="LightweightSpaceshipRight.png">Lightweight Spaceship Right</option>
+                <!--->
+                <option value="MassiveBomb.png">Massive Bomb</option>
+                <option value="MassiveQuadBomb.png">Massive Quad Bomb</option>
+                <option value="Seawolf1.png">Seawolf #1</option>
+                <option value="Seawolf2.png">Seawolf #2</option>
+                <option value="Seawolf3.png">Seawolf #3</option>
+                <option value="SmallExploder.png">Small Exploder</option>
+                <option value="TenCellRow.png">Ten Cell Row</option>
+                <option value="Tumbler.png">Tumbler</option>
+                <!-- Void Cell -->
+                <option value="VoidCell.png">Void Cell</option>
+                <!--->
+                <!-- Remove Void Cell -->
+                <option value="RemoveVoidCell.png">Remove Void Cell</option>
+                <!--->
+            </select>
+            
+            <!-- These buttons are for speeding up the simulation and
+            for changing the cell length of the cells, which in effect
+            zooms the view in. Note that our CPU may have trouble keeping
+            up when the cell length is 1, which means a 1-to-1 cell
+            length to pixel ratio.-->
+            <input id="dec_fps_button" type="button" value="FPS-" />
+            <input id="inc_fps_button" type="button" value="FPS+" />
+            <input id="dec_cell_length_button" type="button" value="Cell Length-" />
+            <input id="inc_cell_length_button" type="button" value="Cell Length+" />
+        </div>
+
+        <!--
+        This canvas is where we render the simulation. Note that we
+        also need to respond to mouse clicks on the canvas, which we'll
+        do via the respondToMouseClick method.
+        -->
+        <div id = container>
+            <div id = "canvas_layer">
+                <canvas id="ghost_canvas" width="1024" height="512">
+                </canvas>
+                <canvas id="game_of_life_canvas" width="1024" height="512">
+                </canvas>
+
+
+            </div>
+        </div>
+
+
+        <div class="author">by Richard McKenna & James Lynn</div>
+        
+        <!--
+        This code gets executed after everything else has already
+        been loaded. Note that we are referencing methods defined
+        inside GameOfLife.js.
+        -->
+        <script>
+            initGameOfLife();
+        </script>
+    </body>
+</html>

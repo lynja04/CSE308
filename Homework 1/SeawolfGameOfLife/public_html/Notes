@@ -1,0 +1,11 @@
+//Notes for Homework1
+
+//Bright Feedback
+Flash feed back. For one frame it flashes alittle brighter.
+Render it on top of the canvas
+
+//Void Cells
+Dead cells are white and void cells are transparent
+Void cells are the dark blue gray
+Make the background color of the canvas the dark blue gray from the white
+
