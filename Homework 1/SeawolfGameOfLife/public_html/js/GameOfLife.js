@@ -384,9 +384,11 @@ function placeOnGrid(pixels, clickCol, clickRow, cellType, ghostFlag)
             var row = clickRow + pixels[i + 1];
 
             var cell = getGridCell(persistentMouseArray, row, col);
-            //var aliveCheck = getGridCell(renderGrid, row, col);
             if(cell === VOID_CELL){
                 continue;
+            } else if(cell == DEAD_CELL){
+                setGridCell(renderGrid, row, col, DEAD_CELL);
+                setGridCell(updateGrid, row, col, DEAD_CELL);
             } else {
                 setGridCell(renderGrid, row, col, LIVE_CELL);
                 setGridCell(updateGrid, row, col, LIVE_CELL);
@@ -404,12 +406,21 @@ function placeInMouseArray(pixels, clickCol, clickRow, cellType)
     for (var i = 0; i < pixels.length; i += 2) {
         var col = clickCol + pixels[i];
         var row = clickRow + pixels[i + 1];
+        var currentCell = getGridCell(renderGrid, row, col);
         if(cellType === VOID_CELL){
             setGridCell(recordMouseArray, row, col, VOID_CELL);
             setGridCell(persistentMouseArray, row, col, VOID_CELL);
-        } else {
-            setGridCell(recordMouseArray, row, col, DEAD_CELL);
-            setGridCell(persistentMouseArray, row, col, DEAD_CELL);
+        } else if(cellType === DEAD_CELL){
+            if(currentCell === LIVE_CELL){
+                setGridCell(recordMouseArray, row, col, LIVE_CELL);
+                setGridCell(persistentMouseArray, row, col, LIVE_CELL);
+            } else if(currentCell === VOID_CELL){
+                setGridCell(recordMouseArray, row, col, DEAD_CELL);
+                setGridCell(persistentMouseArray, row, col, DEAD_CELL);
+            } else {
+                setGridCell(recordMouseArray, row, col, DEAD_CELL);
+                setGridCell(persistentMouseArray, row, col, DEAD_CELL);
+            }
         }
     }
 }
@@ -508,6 +519,7 @@ function respondToMouseDown(event)
  */
 function respondToMouseClick(event)
 {
+    pressedDown = false;
     // GET THE PATTERN SELECTED IN THE DROP DOWN LIST
     var selectedPattern = getSelectedPattern();
 
@@ -535,8 +547,6 @@ function respondToMouseClick(event)
         //Flash of bright pink when placed on canvas
         brightFeedback(pixels, clickCol, clickRow);
     }
-
-    pressedDown = false;
 }
 
 /*
@@ -608,16 +618,16 @@ function respondToMouseUp(event)
             //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
             placeInMouseArray(pixels, mouseCol, mouseRow, VOID_CELL);
             brightFeedback(pixels, mouseCol, mouseRow, 1);
-            pressedDown = false;
         }
     } else if(selectedPattern === "RemoveVoidCell.png") {
         if (pressedDown === true) {
             //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
             placeInMouseArray(pixels, mouseCol, mouseRow, DEAD_CELL);
             brightFeedback(pixels, mouseCol, mouseRow, 0);
-            pressedDown = false;
         }
     }
+
+    pressedDown = false;
 }
 
 /*
@@ -673,6 +683,8 @@ function resetGameOfLife()
         {
             setGridCell(updateGrid, i, j, DEAD_CELL);
             setGridCell(renderGrid, i, j, DEAD_CELL);
+            setGridCell(recordMouseArray, i, j, DEAD_CELL);
+            setGridCell(persistentMouseArray, i, j, DEAD_CELL);
         }
     }
 
@@ -1101,6 +1113,8 @@ function renderBrightCells(){
         {
             var cell = getGridCell(renderGrid, i, j);
             var cellCheck = getGridCell(persistentMouseArray, i, j);
+
+            var selectedPattern = getSelectedPattern();
             if (cell === BRIGHT_CELL)
             {
                 var x = j * cellLength;
@@ -1110,6 +1124,8 @@ function renderBrightCells(){
                 if(cellCheck === VOID_CELL){
                     setGridCell(renderGrid, i, j, VOID_CELL);
                     setGridCell(updateGrid, i, j, VOID_CELL);
+                } else if(cellCheck == DEAD_CELL && selectedPattern === "RemoveVoidCell.png"){
+                    continue;
                 } else {
                     setGridCell(renderGrid, i, j, LIVE_CELL);
                     setGridCell(updateGrid, i, j, LIVE_CELL);
