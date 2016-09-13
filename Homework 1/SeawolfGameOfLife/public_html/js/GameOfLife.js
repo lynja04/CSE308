@@ -492,12 +492,12 @@ function respondToMouseDown(event)
     if(selectedPattern === "VoidCell.png") {
         // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
         placeInMouseArray(pixels, clickCol, clickRow, VOID_CELL);
-        brightFeedback(pixels, clickCol, clickRow, 1);
+        brightFeedback(pixels, clickCol, clickRow);
 
     } else if(selectedPattern === "RemoveVoidCell.png"){
         // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
         placeInMouseArray(pixels, clickCol, clickRow, DEAD_CELL);
-        brightFeedback(pixels, clickCol, clickRow, 0);
+        brightFeedback(pixels, clickCol, clickRow);
     }
 }
 
@@ -523,13 +523,17 @@ function respondToMouseClick(event)
     if(selectedPattern === "VoidCell.png"){
         // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
         placeOnGrid(pixels, clickCol, clickRow, VOID_CELL, 0);
-        brightFeedback(pixels, clickCol, clickRow, 1);
+        brightFeedback(pixels, clickCol, clickRow);
+    } else if(selectedPattern === "RemoveVoidCell.png"){
+        // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
+        placeOnGrid(pixels, clickCol, clickRow, DEAD_CELL, 0);
+        brightFeedback(pixels, clickCol, clickRow);
     } else {
         // GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
         placeOnGrid(pixels, clickCol, clickRow, LIVE_CELL, 0);
 
         //Flash of bright pink when placed on canvas
-        brightFeedback(pixels, clickCol, clickRow, 0);
+        brightFeedback(pixels, clickCol, clickRow);
     }
 }
 
@@ -558,13 +562,13 @@ function respondToMouseMove(event)
         if(pressedDown === true){
             //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
             placeInMouseArray(pixels, mouseCol, mouseRow, VOID_CELL);
-            brightFeedback(pixels, mouseCol, mouseRow, 1);
+            brightFeedback(pixels, mouseCol, mouseRow);
         }
     } else if(selectedPattern === "RemoveVoidCell.png"){
         if(pressedDown === true){
             //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
             placeInMouseArray(pixels, mouseCol, mouseRow, DEAD_CELL);
-            brightFeedback(pixels, mouseCol, mouseRow, 0);
+            brightFeedback(pixels, mouseCol, mouseRow);
         }
         // Else just ghost the image
     } else {
@@ -653,6 +657,8 @@ function resetGameOfLife()
     gridHeight = canvasHeight/cellLength;
     updateGrid = new Array();
     renderGrid = new Array();
+    persistentMouseArray = new Array();
+    recordMouseArray = new Array();
 
     // INIT THE CELLS IN THE GRID
     for (var i = 0; i < gridHeight; i++)
@@ -1062,7 +1068,7 @@ function renderCells()
 /*
  * Sets Bright cells to make the bright feedback functionality
  */
-function brightFeedback(pixels, clickCol, clickRow, voidFlag)
+function brightFeedback(pixels, clickCol, clickRow)
 {
     for (var i = 0; i < pixels.length; i += 2) {
         var col = clickCol + pixels[i];
@@ -1072,20 +1078,13 @@ function brightFeedback(pixels, clickCol, clickRow, voidFlag)
     }
 
     renderBrightCells();
-    // //Render the bright cells for one frame and then next
-    // //tick will render the game
-    // if(voidFlag){
-    //     renderBrightCells(1);
-    // } else {
-    //     renderBrightCells(0);
-    // }
 }
 
 /*
  * Renders the bright cells on the grid
  * Takes in a flag to check if the cells are void
  */
-function renderBrightCells(voidFlag){
+function renderBrightCells(){
     // SET THE PROPER RENDER COLOR
     canvas2D.fillStyle = BRIGHT_COLOR;
 
@@ -1109,13 +1108,6 @@ function renderBrightCells(voidFlag){
                     setGridCell(renderGrid, i, j, LIVE_CELL);
                     setGridCell(updateGrid, i, j, LIVE_CELL);
                 }
-                // if(voidFlag){
-                //     setGridCell(renderGrid, i, j, VOID_CELL);
-                //     setGridCell(updateGrid, i, j, VOID_CELL);
-                // } else {
-                //     setGridCell(renderGrid, i, j, LIVE_CELL);
-                //     setGridCell(updateGrid, i, j, LIVE_CELL);
-                // }
             }
         }
     }
