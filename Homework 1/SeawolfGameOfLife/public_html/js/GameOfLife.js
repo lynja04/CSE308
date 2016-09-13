@@ -77,7 +77,7 @@ var imgDir;
 //Add void/Remove void cell variables
 var recordMouseArray;
 var persistentMouseArray = new Array();
-var pressedDown;
+var pressedDown = false;
 
 // INITIALIZATION METHODS
 
@@ -382,9 +382,9 @@ function placeOnGrid(pixels, clickCol, clickRow, cellType, ghostFlag)
         for (var i = 0; i < pixels.length; i += 2) {
             var col = clickCol + pixels[i];
             var row = clickRow + pixels[i + 1];
-            // setGridCell(renderGrid, row, col, cellType);
-            // setGridCell(updateGrid, row, col, cellType);
+
             var cell = getGridCell(persistentMouseArray, row, col);
+            //var aliveCheck = getGridCell(renderGrid, row, col);
             if(cell === VOID_CELL){
                 continue;
             } else {
@@ -535,6 +535,8 @@ function respondToMouseClick(event)
         //Flash of bright pink when placed on canvas
         brightFeedback(pixels, clickCol, clickRow);
     }
+
+    pressedDown = false;
 }
 
 /*
@@ -563,21 +565,25 @@ function respondToMouseMove(event)
             //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
             placeInMouseArray(pixels, mouseCol, mouseRow, VOID_CELL);
             brightFeedback(pixels, mouseCol, mouseRow);
+        } else {
+            placeOnGrid(pixels, mouseCol, mouseRow, GHOST_CELL, 1);
         }
     } else if(selectedPattern === "RemoveVoidCell.png"){
         if(pressedDown === true){
             //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
             placeInMouseArray(pixels, mouseCol, mouseRow, DEAD_CELL);
             brightFeedback(pixels, mouseCol, mouseRow);
+        } else {
+            placeOnGrid(pixels, mouseCol, mouseRow, GHOST_CELL, 1);
         }
         // Else just ghost the image
     } else {
         //GO THROUGH ALL THE PIXELS IN THE PATTERN AND PUT THEM IN THE GRID
         placeOnGrid(pixels, mouseCol, mouseRow, GHOST_CELL, 1);
 
-        // RENDER THE GHOST CELLS
-        renderGhostCells();
     }
+    // RENDER THE GHOST CELLS
+    renderGhostCells();
 }
 
 /*
